@@ -1,0 +1,196 @@
+---
+---
+
+<div id="bg-animation" class="bg-animation" aria-hidden="true">
+  <canvas id="starfield"></canvas>
+</div>
+
+<style>
+  .bg-animation {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  #starfield {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ── Shooting stars / comets ── */
+  :global(.comet) {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    box-shadow:
+      0 0 4px 1px rgba(255, 255, 255, 0.6),
+      0 0 12px 2px var(--gradient-start);
+    animation: shoot linear forwards;
+    opacity: 0;
+  }
+
+  :global([data-theme="light"] .comet) {
+    background: #64748b;
+    box-shadow:
+      0 0 4px 1px rgba(100, 116, 139, 0.5),
+      0 0 12px 2px rgba(71, 85, 105, 0.3);
+  }
+
+  :global(.comet::after) {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(to left, rgba(255, 255, 255, 0.6), transparent);
+    transform: translateY(-50%);
+  }
+
+  :global([data-theme="light"] .comet::after) {
+    background: linear-gradient(to left, rgba(100, 116, 139, 0.5), transparent);
+  }
+
+  @keyframes shoot {
+    0% {
+      opacity: 0;
+      transform: translate(0, 0) rotate(-35deg);
+    }
+    5% {
+      opacity: 1;
+    }
+    70% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-600px, 400px) rotate(-35deg);
+    }
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    :global(.comet) {
+      display: none;
+    }
+  }
+</style>
+
+<script is:inline>
+  function initBackgroundAnimation() {
+    const container = document.getElementById("bg-animation");
+    const canvas = document.getElementById("starfield");
+    if (!container || !canvas) return;
+
+    const ctx = canvas.getContext("2d");
+
+    // ── Starfield ──
+    const stars = [];
+    const STAR_COUNT = 120;
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function createStars() {
+      stars.length = 0;
+      for (let i = 0; i < STAR_COUNT; i++) {
+          const radius = Math.random() * 1.5 + 0.3;
+        const isStatic = Math.random() < 0.6;
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius,
+          baseOpacity: radius < 0.8 ? Math.random() * 0.3 + 0.05 : Math.random() * 0.5 + 0.3,
+          twinkleSpeed: isStatic ? 0 : Math.random() * 0.008 + 0.002,
+          twinkleOffset: Math.random() * Math.PI * 2,
+        });
+      }
+    }
+
+    function isLightTheme() {
+      return document.documentElement.getAttribute("data-theme") === "light";
+    }
+
+    function drawStars(time) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const light = isLightTheme();
+
+      for (const star of stars) {
+        const twinkle = Math.sin(time * star.twinkleSpeed + star.twinkleOffset);
+        const opacity = star.baseOpacity + twinkle * 0.3;
+
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        if (light) {
+          const grey = Math.floor(Math.random() * 40 + 80);
+          ctx.fillStyle = "rgba(" + grey + ", " + grey + ", " + grey + ", " + Math.max(0.05, opacity) + ")";
+        } else {
+          ctx.fillStyle = "rgba(255, 255, 255, " + Math.max(0.05, opacity) + ")";
+        }
+        ctx.fill();
+
+        // Glow on brighter stars
+        if (star.radius > 1) {
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.radius * 2.5, 0, Math.PI * 2);
+          if (light) {
+            ctx.fillStyle = "rgba(100, 100, 120, " + Math.max(0, opacity * 0.12) + ")";
+          } else {
+            ctx.fillStyle = "rgba(200, 210, 255, " + Math.max(0, opacity * 0.15) + ")";
+          }
+          ctx.fill();
+        }
+      }
+
+      requestAnimationFrame(drawStars);
+    }
+
+    resize();
+    createStars();
+    requestAnimationFrame(drawStars);
+    window.addEventListener("resize", () => {
+      resize();
+      createStars();
+    });
+
+    // ── Comets ──
+    function spawnComet() {
+      const comet = document.createElement("div");
+      comet.className = "comet";
+
+      const startX = Math.random() * window.innerWidth * 0.8 + window.innerWidth * 0.2;
+      const startY = Math.random() * window.innerHeight * 0.4;
+      const duration = Math.random() * 1500 + 1000;
+      const size = Math.random() * 2 + 1;
+
+      comet.style.left = startX + "px";
+      comet.style.top = startY + "px";
+      comet.style.width = size + "px";
+      comet.style.height = size + "px";
+      comet.style.animationDuration = duration + "ms";
+
+      container.appendChild(comet);
+
+      setTimeout(() => comet.remove(), duration + 100);
+    }
+
+    function scheduleComet() {
+      const delay = Math.random() * 1500 + 800;
+      setTimeout(() => {
+        spawnComet();
+        scheduleComet();
+      }, delay);
+    }
+
+    scheduleComet();
+  }
+
+  initBackgroundAnimation();
+  document.addEventListener("astro:after-swap", initBackgroundAnimation);
+</script>

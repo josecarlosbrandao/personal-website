@@ -1,0 +1,170 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import TimelineItem from "../components/TimelineItem.astro";
+
+const experience = [
+  {
+    title: "Senior Backend Engineer",
+    company: "Uphold",
+    companyUrl: "https://uphold.com",
+    period: "Jun 2025 — Present",
+    description:
+      "Developing neobanking features in the digital payments team. Working with high transaction volume systems across multiple jurisdictions with strict AML compliance requirements.",
+  },
+  {
+    title: "Senior Software Engineer",
+    company: "AgentifAI",
+    companyUrl: "https://agentifai.com",
+    period: "Jan 2024 — Jun 2025",
+    description:
+      "Played a crucial role in developing Gen AI chat and voice bots for healthcare and banking verticals. Built systems enabling users to manage medical appointments, exam schedules, check balances, unlock banking contracts, and transfer funds.",
+  },
+  {
+    title: "Software Engineer",
+    company: "AgentifAI",
+    companyUrl: "https://agentifai.com",
+    period: "Jan 2020 — Dec 2023",
+    description:
+      "Built and maintained conversational AI platforms serving healthcare and banking customers. Designed and implemented microservices architecture, API integrations, and real-time communication systems.",
+  },
+  {
+    title: "Junior Software Engineer",
+    company: "AgentifAI",
+    companyUrl: "https://agentifai.com",
+    period: "Jan 2019 — Dec 2019",
+    description:
+      "Developed chatbot infrastructure and NLP pipelines. Contributed to the core platform enabling automated customer interactions across multiple channels.",
+  },
+];
+
+const education = [
+  {
+    title: "Master of Science (MSc)",
+    company: "Universidade do Minho",
+    period: "2016 — 2018",
+    description:
+      "Dissertation: Design and development of a simulator for PVSio-web environments. Specializations in Business Intelligence, Application Engineering, Intelligent Agents, and Knowledge Extraction.",
+  },
+  {
+    title: "Bachelor of Science (BSc)",
+    company: "Universidade do Minho",
+    period: "2013 — 2016",
+    description: "Software Engineering.",
+  },
+];
+
+const certifications = [
+  {
+    name: "Claude Code Masterclass",
+    issuer: "Net Ninja",
+    year: "2026",
+  },
+  {
+    name: "C2 Proficiency (CPE)",
+    issuer: "Cambridge English — British Institute of Braga",
+    year: "2012",
+  },
+  {
+    name: "B2 First (FCE)",
+    issuer: "Cambridge English — British Institute of Braga",
+    year: "2010",
+  },
+];
+---
+
+<BaseLayout
+  title="Resume — José Carlos Brandão"
+  description="Professional experience, education, and certifications of José Carlos Brandão, Senior Backend Engineer."
+>
+  <section class="section">
+    <h1 class="page-title animate-on-scroll">
+      <span class="gradient-text">Resume</span>
+    </h1>
+
+    <!-- Experience -->
+    <h2 class="section-title animate-on-scroll">Experience</h2>
+    <div class="timeline">
+      {experience.map((item, i) => (
+        <TimelineItem {...item} delay={i * 150} />
+      ))}
+    </div>
+
+    <!-- Education -->
+    <h2 class="section-title animate-on-scroll">Education</h2>
+    <div class="timeline">
+      {education.map((item, i) => (
+        <TimelineItem {...item} delay={i * 150} />
+      ))}
+    </div>
+
+    <!-- Certifications -->
+    <h2 class="section-title animate-on-scroll">Certifications</h2>
+    <div class="certs-grid">
+      {certifications.map((cert, i) => (
+        <div class="cert-card animate-on-scroll" style={`transition-delay: ${i * 150}ms`}>
+          <h3 class="cert-name">{cert.name}</h3>
+          <p class="cert-issuer">{cert.issuer}</p>
+          <span class="cert-year">{cert.year}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    margin-bottom: 2rem;
+    letter-spacing: -0.02em;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    margin-top: 3rem;
+    color: var(--text);
+  }
+
+  .section-title:first-of-type {
+    margin-top: 0;
+  }
+
+  .certs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+
+  .cert-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    transition: all 0.2s ease;
+  }
+
+  .cert-card:hover {
+    border-color: var(--border-hover);
+  }
+
+  .cert-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+
+  .cert-issuer {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+  }
+
+  .cert-year {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-family: "JetBrains Mono", monospace;
+  }
+</style>
